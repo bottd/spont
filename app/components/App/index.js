@@ -2,7 +2,7 @@ import React from "react";
 import { StatusBar, StyleSheet, View } from "react-native";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 
-import DarkStyles from './DarkStyles.json';
+import DarkStyles from '../../styles/DarkStyles.json';
 
 export default () => (
   <View style={styles.container}>
