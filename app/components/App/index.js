@@ -10,10 +10,56 @@ import DarkStyles from '../../styles/DarkStyles.json';
 export default class App extends Component {
   constructor() {
     super()
+    this.state = {
+      location: ''
+    }
   }
 
   componentDidMount() {
-    
+    BackgroundGeolocation.onLocation(this.onLocation, this.onError);
+    BackgroundGeolocation.ready({
+      desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
+      distanceFilter: 10,
+      stopTimeout: 1,
+      // Application config
+      logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
+      stopOnTerminate: false,   // <-- Allow the background-service to continue tracking when user closes the app.
+      startOnBoot: true,        // <-- Auto start tracking when device is powered-up.
+      // HTTP / SQLite config
+      url: 'http://yourserver.com/locations',
+      batchSync: false,       // <-- [Default: false] Set true to sync locations to server in a single HTTP request.
+      autoSync: true,         // <-- [Default: true] Set true to sync each location to server as it arrives.
+      headers: {              // <-- Optional HTTP headers
+        "X-FOO": "bar"
+      },
+      params: {               // <-- Optional HTTP params
+        "auth_token": "maybe_your_server_authenticates_via_token_YES?"
+      }
+    }, (state) => {
+      console.log("- BackgroundGeolocation is configured and ready: ", state.enabled);
+     
+
+      if (state.enabled) {
+        console.log(state)
+        ////
+        // 3. Start tracking!
+        //
+        BackgroundGeolocation.start(function() {
+          console.log("- Start success");
+        });
+      }
+    });
+  }
+
+  onLocation(location) {
+    console.log('[location] -', location);
+  }
+  onError(error) {
+    console.warn('[location] ERROR -', error);
+  }
+
+  componentWillUnmount() {
+    BackgroundGeolocation.removeListeners();
   }
 
   render() {
