@@ -2,9 +2,6 @@ import React, { Component } from "react";
 import { StatusBar, StyleSheet, View } from "react-native";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import BackgroundGeolocation from "react-native-background-geolocation";
-
-
-
 import DarkStyles from '../../styles/DarkStyles.json';
 
 export default class App extends Component {
@@ -21,29 +18,22 @@ export default class App extends Component {
       desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
       distanceFilter: 10,
       stopTimeout: 1,
-      // Application config
       logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
-      stopOnTerminate: false,   // <-- Allow the background-service to continue tracking when user closes the app.
-      startOnBoot: true,        // <-- Auto start tracking when device is powered-up.
-      // HTTP / SQLite config
+      stopOnTerminate: false,
+      startOnBoot: true,
       url: 'http://yourserver.com/locations',
-      batchSync: false,       // <-- [Default: false] Set true to sync locations to server in a single HTTP request.
-      autoSync: true,         // <-- [Default: true] Set true to sync each location to server as it arrives.
-      headers: {              // <-- Optional HTTP headers
+      batchSync: false,
+      autoSync: true,
+      headers: {
         "X-FOO": "bar"
       },
-      params: {               // <-- Optional HTTP params
+       params: {               // <-- Optional HTTP params
         "auth_token": "maybe_your_server_authenticates_via_token_YES?"
       }
     }, (state) => {
       console.log("- BackgroundGeolocation is configured and ready: ", state.enabled);
-     
 
-      if (state.enabled) {
-        console.log(state)
-        ////
-        // 3. Start tracking!
-        //
+      if (!state.enabled) {
         BackgroundGeolocation.start(function() {
           console.log("- Start success");
         });
