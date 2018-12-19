@@ -1,23 +1,17 @@
 import React, { Component } from "react";
-import { StatusBar, StyleSheet, View, Dimensions } from "react-native";
-import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
+import { View } from "react-native";
 import BackgroundGeolocation from "react-native-background-geolocation";
-import DarkStyles from '../../styles/DarkStyles.json';
 
-let { width, height } = Dimensions.get('window');
-const ASPECT_RATIO = width / height;
-const LATITUDE_DELTA = 0.0922;
-const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+import Map from '../Map'
+
 
 export default class App extends Component {
   constructor() {
     super()
     this.state = {
-      region: {
+      position: {
         latitude: 39.751214,
         longitude: -104.996227,
-        latitudeDelta: LATITUDE_DELTA,
-        longitudeDelta: LONGITUDE_DELTA,
       }
     }
   }
@@ -53,14 +47,13 @@ export default class App extends Component {
 
   onLocation = (location) => {
     console.log('[location] -', location);
-    const { latitudeDelta, longitudeDelta } = this.state.region;
-    const region = {
+    const position = {
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
-      latitudeDelta, longitudeDelta
     }
-    this.setState({ region })
+    this.setState({ position })
   }
+  
   onError(error) {
     console.warn('[location] ERROR -', error);
   }
@@ -70,23 +63,11 @@ export default class App extends Component {
   }
 
   render() {
-    const { latitude, longitude, latitudeDelta, longitudeDelta } = this.state.region;
-    console.log(this.state.region)
+    const { position } = this.state;
     return(
-      <View style={styles.container}>
-      <StatusBar barStyle="light-content"/>
-        <MapView
-          provider={ PROVIDER_GOOGLE }
-          style={ styles.container }
-          customMapStyle={ DarkStyles }
-          showsUserLocation = {true}
-          region={{
-            latitude,
-            longitude,
-            latitudeDelta,
-            longitudeDelta
-          }}
-        />
+      <View >
+        <Map {...position}/>
+      
       </View>
     )
   }
@@ -94,9 +75,4 @@ export default class App extends Component {
 
 
 
-const styles = StyleSheet.create({
-    container: {
-      height: '100%',
-      width: '100%',
-    }
-});
+
