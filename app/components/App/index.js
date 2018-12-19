@@ -1,14 +1,24 @@
 import React, { Component } from "react";
-import { StatusBar, StyleSheet, View } from "react-native";
+import { StatusBar, StyleSheet, View, Dimensions } from "react-native";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import BackgroundGeolocation from "react-native-background-geolocation";
 import DarkStyles from '../../styles/DarkStyles.json';
+
+let { width, height } = Dimensions.get('window');
+const ASPECT_RATIO = width / height;
+const LATITUDE_DELTA = 0.0922;
+const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 export default class App extends Component {
   constructor() {
     super()
     this.state = {
-      location: ''
+      region: {
+        latitude: 39.751214,
+        longitude: -104.996227,
+        latitudeDelta: LATITUDE_DELTA,
+        longitudeDelta: LONGITUDE_DELTA,
+      }
     }
   }
 
@@ -33,7 +43,7 @@ export default class App extends Component {
     }, (state) => {
       console.log("- BackgroundGeolocation is configured and ready: ", state.enabled);
 
-      if (!state.enabled) {
+      if (state.enabled) {
         BackgroundGeolocation.start(function() {
           console.log("- Start success");
         });
@@ -41,8 +51,15 @@ export default class App extends Component {
     });
   }
 
-  onLocation(location) {
+  onLocation = (location) => {
     console.log('[location] -', location);
+    const { latitudeDelta, longitudeDelta } = this.state.region;
+    const region = {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+      latitudeDelta, longitudeDelta
+    }
+    this.setState({ region })
   }
   onError(error) {
     console.warn('[location] ERROR -', error);
@@ -53,6 +70,8 @@ export default class App extends Component {
   }
 
   render() {
+    const { latitude, longitude, latitudeDelta, longitudeDelta } = this.state.region;
+    console.log(this.state.region)
     return(
       <View style={styles.container}>
       <StatusBar barStyle="light-content"/>
@@ -61,11 +80,11 @@ export default class App extends Component {
           style={ styles.container }
           customMapStyle={ DarkStyles }
           showsUserLocation = {true}
-          initialRegion={{
-            latitude: 39.7392,
-            longitude: -104.9953,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
+          region={{
+            latitude,
+            longitude,
+            latitudeDelta,
+            longitudeDelta
           }}
         />
       </View>
