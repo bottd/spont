@@ -16,51 +16,51 @@ export default class App extends Component {
     }
   }
 
-  // componentDidMount() {
-  //   BackgroundGeolocation.onLocation(this.onLocation, this.onError);
-  //   BackgroundGeolocation.ready({
-  //     desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
-  //     distanceFilter: 10,
-  //     stopTimeout: 1,
-  //     logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
-  //     stopOnTerminate: false,
-  //     startOnBoot: true,
-  //     url: 'http://yourserver.com/locations',
-  //     batchSync: false,
-  //     autoSync: true,
-  //     headers: {
-  //       "X-FOO": "bar"
-  //     },
-  //      params: {               // <-- Optional HTTP params
-  //       "auth_token": "maybe_your_server_authenticates_via_token_YES?"
-  //     }
-  //   }, (state) => {
-  //     console.log("- BackgroundGeolocation is configured and ready: ", state.enabled);
+  componentDidMount() {
+    BackgroundGeolocation.onLocation(this.onLocation, this.onError);
+    BackgroundGeolocation.ready({
+      desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
+      distanceFilter: 10,
+      stopTimeout: 1,
+      logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
+      stopOnTerminate: false,
+      startOnBoot: true,
+      url: 'http://yourserver.com/locations',
+      batchSync: false,
+      autoSync: false,
+      headers: {
+        "X-FOO": "bar"
+      },
+       params: {               // <-- Optional HTTP params
+        "auth_token": "maybe_your_server_authenticates_via_token_YES?"
+      }
+    }, (state) => {
+      console.log("- BackgroundGeolocation is configured and ready: ", state.enabled);
 
-  //     if (state.enabled) {
-  //       BackgroundGeolocation.start(function() {
-  //         console.log("- Start success");
-  //       });
-  //     }
-  //   });
-  // }
+      if (state.enabled) {
+        BackgroundGeolocation.start(function() {
+          console.log("- Start success");
+        });
+      }
+    });
+  }
 
-  // onLocation = (location) => {
-  //   console.log('[location] -', location);
-  //   const position = {
-  //     latitude: location.coords.latitude,
-  //     longitude: location.coords.longitude,
-  //   }
-  //   this.setState({ position })
-  // }
+  onLocation = (location) => {
+    console.log('[location] -', location);
+    const position = {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    }
+    this.setState({ position })
+  }
 
-  // onError(error) {
-  //   console.warn('[location] ERROR -', error);
-  // }
+  onError(error) {
+    console.warn('[location] ERROR -', error);
+  }
 
-  // componentWillUnmount() {
-  //   BackgroundGeolocation.removeListeners();
-  // }
+  componentWillUnmount() {
+    BackgroundGeolocation.removeListeners();
+  }
 
   render() {
     const { position } = this.state;

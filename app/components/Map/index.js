@@ -30,7 +30,7 @@ const Map = ( { latitude, longitude } ) => {
           longitudeDelta
         }}
         >
-        {/* <MapView.Marker     
+        <MapView.Marker     
           coordinate={ { latitude: 39.751714, longitude: -104.99200 } }
           image={ markerImage }
           title={'hey'}
@@ -39,7 +39,7 @@ const Map = ( { latitude, longitude } ) => {
           coordinate={ { latitude: 39.755714, longitude: -104.98200 } }
           image={ markerImage }
           title={'hey'}
-          />  */}
+          /> 
         </MapView> 
     </View>
   )
