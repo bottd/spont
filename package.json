@@ -11,8 +11,7 @@
     "react": "16.6.3",
     "react-native": "0.57.8",
     "react-native-background-geolocation": "^2.14.2",
-    "react-native-maps": "^0.22.1",
-    "react-native-svg": "^8.0.10"
+    "react-native-maps": "^0.22.1"
   },
   "devDependencies": {
     "babel-jest": "23.6.0",
