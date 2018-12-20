@@ -1,7 +1,6 @@
 import React from "react";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
-import Marker from "react-native-maps";
-import { StatusBar, StyleSheet, View, Dimensions } from "react-native";
+import { StyleSheet, View, Dimensions } from "react-native";
 
 import DarkStyles from './styles/DarkStyles.json';
 import markerImage from './assets/test.png';
@@ -18,7 +17,7 @@ const Map = ( { latitude, longitude } ) => {
         provider={ PROVIDER_GOOGLE }
         style={ styles.container }
         customMapStyle={ DarkStyles }
-        // showsUserLocation = {true}
+        showsUserLocation = {true}
         region={{
           latitude,
           longitude,
@@ -27,8 +26,9 @@ const Map = ( { latitude, longitude } ) => {
         }}
         >
         <MapView.Marker     
-          coordinate={ { latitude: 39.751214, longitude: -104.996227 } }
+          coordinate={ { latitude: 39.751714, longitude: -104.99200 } }
           image={ markerImage }
+          title={'hey'}
           /> 
         </MapView> 
     </View>
