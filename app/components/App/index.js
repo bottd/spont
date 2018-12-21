@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StatusBar, View } from "react-native";
+import { StatusBar, View, Text } from "react-native";
 import BackgroundGeolocation from "react-native-background-geolocation";
 
 import Map from '../Map'
@@ -12,7 +12,8 @@ export default class App extends Component {
       position: {
         latitude: 39.751214,
         longitude: -104.996227,
-      }
+      },
+      status: ''
     }
   }
 
@@ -68,6 +69,9 @@ export default class App extends Component {
       <View >
         <StatusBar barStyle="light-content"/>
         <Map {...position}/>
+        <View>
+          <Text>{this.state.status}</Text>
+        </View>
       
       </View>
     )
