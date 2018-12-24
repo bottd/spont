@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import { StyleSheet, View, Dimensions, Image } from "react-native";
 
@@ -6,16 +6,52 @@ import DarkStyles from './styles/DarkStyles.json';
 import LightStyles from './styles/LightStyles.json';
 // import markerImage from './assets/test.png';
 
-const Map = ( { latitude, longitude } ) => {
+class Map extends Component {
+  constructor() {
+    super()
+    this.state = {
+      region: {
+        latitude: 0,
+        longitude: 0
+      },
+      ready: true,
+      filteredMarkers: []
+    };
+  }
 
+  setRegion(region) {
+    this.setState({ region });
+  }
+
+  componentDidMount() {
+    this.getCurrentPosition();
+  }
+
+  getCurrentPosition() {
+    try {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const region = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        };
+        this.setRegion(region);
+      });
+    } catch(error) {
+      console.log(error.message);
+    }
+  };
+
+  render() {
+  const { latitude, longitude } = this.state.region;
   const currentTime = new Date().getHours();
   const mapStyle = currentTime > 8 ? DarkStyles : LightStyles;
-  console.log(mapStyle)
   let { width, height } = Dimensions.get('window');
   const aspectRatio = width / height;
   const latitudeDelta = 0.0922;
   const longitudeDelta = latitudeDelta * aspectRatio;
   
+
+
   return(
     <View>
       <MapView
@@ -49,6 +85,7 @@ const Map = ( { latitude, longitude } ) => {
         </MapView> 
     </View>
   )
+}
 }
 
 const styles = StyleSheet.create({
