@@ -65,6 +65,8 @@ class Map extends Component {
           latitudeDelta,
           longitudeDelta
         }}
+        showsMyLocationButton={true}
+
         >
         <MapView.Marker     
           coordinate={ { latitude: 39.751714, longitude: -104.99200 } }
@@ -90,7 +92,7 @@ class Map extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
+    height: '95%',
     width: '100%',
   }
 });
