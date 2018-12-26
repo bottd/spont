@@ -10,58 +10,70 @@ export default class App extends Component {
     super()
     this.state = {
       position: {
-        latitude: 39.751214,
-        longitude: -104.996227,
+        latitude: 0,
+        longitude: 0,
       },
       status: ''
     }
   }
 
   componentDidMount() {
+    
     BackgroundGeolocation.onLocation(this.onLocation, this.onError);
     BackgroundGeolocation.ready({
+    
+      // Geolocation Config
       desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
       distanceFilter: 10,
+      // Activity Recognition
       stopTimeout: 1,
+      // Application config
+      debug: true, // <-- enable this hear sounds for background-geolocation life-cycle.
       logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
-      stopOnTerminate: false,
-      startOnBoot: true,
+      stopOnTerminate: false,   // <-- Allow the background-service to continue tracking when user closes the app.
+      startOnBoot: true, 
+      // <-- Auto start tracking when device is powered-up.
+      // HTTP / SQLite config
       url: 'http://yourserver.com/locations',
-      batchSync: false,
-      autoSync: false,
-      headers: {
+      batchSync: false,       // <-- [Default: false] Set true to sync locations to server in a single HTTP request.
+      autoSync: false,         // <-- [Default: true] Set true to sync each location to server as it arrives.
+      headers: {              // <-- Optional HTTP headers
         "X-FOO": "bar"
       },
-       params: {               // <-- Optional HTTP params
+      params: {               // <-- Optional HTTP params
         "auth_token": "maybe_your_server_authenticates_via_token_YES?"
       }
     }, (state) => {
       console.log("- BackgroundGeolocation is configured and ready: ", state.enabled);
 
-      if (state.enabled) {
+      if (!state.enabled) {
         BackgroundGeolocation.start(function() {
           console.log("- Start success");
         });
       }
     });
   }
+  
 
-  onLocation = (location) => {
-    console.log('[location] -', location);
+ // You must remove listeners when your component unmounts
+componentWillUnmount() {
+  BackgroundGeolocation.removeListeners();
+}
+onLocation = (location) => {
+  console.log('[location] -', location);
+  if (location.coords.speed === 0) {
     const position = {
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
     }
-    this.setState({ position })
+    this.setState({ position } );
+
   }
 
-  onError(error) {
-    console.warn('[location] ERROR -', error);
-  }
-
-  componentWillUnmount() {
-    BackgroundGeolocation.removeListeners();
-  }
+}
+onError(error) {
+  console.warn('[location] ERROR -', error);
+}
 
   render() {
     const { position } = this.state;
@@ -70,9 +82,8 @@ export default class App extends Component {
         <StatusBar barStyle="light-content"/>
         <Map {...position}/>
         <View>
-          <Text>{this.state.status}</Text>
+          <Text>{`LAT:${position.latitude} LONG:${position.longitude}`}</Text>
         </View>
-      
       </View>
     )
   }
