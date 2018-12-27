@@ -18,11 +18,11 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    
     BackgroundGeolocation.onLocation(this.onLocation, this.onError);
     BackgroundGeolocation.ready({
     
       // Geolocation Config
+      reset: true,
       desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
       distanceFilter: 10,
       // Activity Recognition
@@ -59,6 +59,7 @@ export default class App extends Component {
 componentWillUnmount() {
   BackgroundGeolocation.removeListeners();
 }
+
 onLocation = (location) => {
   console.log('[location] -', location);
   if (location.coords.speed === 0) {
@@ -67,9 +68,7 @@ onLocation = (location) => {
       longitude: location.coords.longitude,
     }
     this.setState({ position } );
-
   }
-
 }
 onError(error) {
   console.warn('[location] ERROR -', error);
@@ -80,7 +79,7 @@ onError(error) {
     return(
       <View >
         <StatusBar barStyle="light-content"/>
-        <Map {...position}/>
+        <Map/>
         <View>
           <Text>{`LAT:${position.latitude} LONG:${position.longitude}`}</Text>
         </View>
