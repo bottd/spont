@@ -18,11 +18,11 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    
     BackgroundGeolocation.onLocation(this.onLocation, this.onError);
     BackgroundGeolocation.ready({
     
       // Geolocation Config
+      reset: true,
       desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
       distanceFilter: 10,
       // Activity Recognition
@@ -30,10 +30,8 @@ export default class App extends Component {
       // Application config
       debug: true, // <-- enable this hear sounds for background-geolocation life-cycle.
       logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
-      stopOnTerminate: false,   // <-- Allow the background-service to continue tracking when user closes the app.
+      stopOnTerminate: false,  
       startOnBoot: true, 
-      // <-- Auto start tracking when device is powered-up.
-      // HTTP / SQLite config
       url: 'http://yourserver.com/locations',
       batchSync: false,       // <-- [Default: false] Set true to sync locations to server in a single HTTP request.
       autoSync: false,         // <-- [Default: true] Set true to sync each location to server as it arrives.
@@ -54,11 +52,10 @@ export default class App extends Component {
     });
   }
   
-
- // You must remove listeners when your component unmounts
 componentWillUnmount() {
   BackgroundGeolocation.removeListeners();
 }
+
 onLocation = (location) => {
   console.log('[location] -', location);
   if (location.coords.speed === 0) {
@@ -67,9 +64,7 @@ onLocation = (location) => {
       longitude: location.coords.longitude,
     }
     this.setState({ position } );
-
   }
-
 }
 onError(error) {
   console.warn('[location] ERROR -', error);
@@ -80,7 +75,7 @@ onError(error) {
     return(
       <View >
         <StatusBar barStyle="light-content"/>
-        <Map {...position}/>
+        <Map/>
         <View>
           <Text>{`LAT:${position.latitude} LONG:${position.longitude}`}</Text>
         </View>
