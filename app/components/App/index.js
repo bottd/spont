@@ -111,9 +111,10 @@ export default class App extends Component {
   }
 
   logCoords = async (position) => {
+    console.log(position)
     const query = JSON.stringify({
       query: `mutation {
-         insertCoords(userID: ${this.state.user}, latitude: ${position.latitude}, longitude: ${position.longitude}){
+        insertCoords(userID: ${this.state.user}, latitude: ${position.latitude}, longitude: ${position.longitude}){
            userID
           }
         }`
