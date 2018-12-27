@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StatusBar, View, Text } from "react-native";
+import { StatusBar, View, Text, AsyncStorage } from "react-native";
 import BackgroundGeolocation from "react-native-background-geolocation";
 
 import Map from '../Map'
@@ -9,15 +9,16 @@ export default class App extends Component {
   constructor() {
     super()
     this.state = {
+      user: '',
       position: {
         latitude: 0,
         longitude: 0,
-      },
-      status: ''
+      }
     }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    await this.linkUser()
     BackgroundGeolocation.onLocation(this.onLocation, this.onError);
     BackgroundGeolocation.ready({
     
@@ -51,24 +52,100 @@ export default class App extends Component {
       }
     });
   }
-  
-componentWillUnmount() {
-  BackgroundGeolocation.removeListeners();
-}
 
-onLocation = (location) => {
-  console.log('[location] -', location);
-  if (location.coords.speed === 0) {
-    const position = {
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
+  linkUser = async () => {
+    const { user } = this.state;
+    if (!user) {
+      const user =  await this.getUser()
+      await this.setState( { user } )
     }
-    this.setState({ position } );
   }
-}
-onError(error) {
-  console.warn('[location] ERROR -', error);
-}
+
+  getUser = async () => {
+    try {
+      const user = await AsyncStorage.getItem('spontUser');
+      if (user !== null) {
+        return user;
+      } else {
+        const newUser = await this.createUser();
+        AsyncStorage.setItem('spontUser', newUser)
+        return newUser;
+      }
+     } catch (error) {
+       console.log(error.message)
+     }
+  }
+
+  createUser = async () => {
+    const query = JSON.stringify({
+      query: `mutation {
+            createUser { 
+              id 
+            }
+          }`
+    });
+
+    console.log(query)
+
+  
+    const response = await fetch(`http://spont-server.herokuapp.com/graphql`, {
+      headers: {'content-type': 'application/json'},
+      method: 'POST',
+      body: query,
+    });
+    
+    const data = await response.json();
+    return data.data.createUser.id;
+  }
+  
+  onLocation = (location) => {
+    console.log('[location] -', location);
+    if (location.coords.speed === 0) {
+      const position = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      }
+      this.setState({ position } );
+      this.logCoords(position);
+    }
+  }
+
+  logCoords = async (position) => {
+    const query = JSON.stringify({
+      query: `mutation {
+         insertCoords(userID: ${this.state.user}, latitude: ${position.latitude}, longitude: ${position.longitude}){
+           userID
+          }
+        }`
+    });
+
+    console.log(query)
+
+    try {
+      const response = await fetch(`http://spont-server.herokuapp.com/graphql`, {
+        headers: {'content-type': 'application/json'},
+        method: 'POST',
+        body: query,
+      });
+      
+      const data = await response.json();
+      console.log(data)
+      return data;
+
+    } catch(error) {
+      console.log(error.message)
+      console.log(error.status)
+    }
+  
+  }
+  
+  onError(error) {
+    console.warn('[location] ERROR -', error);
+  }
+
+  componentWillUnmount() {
+    BackgroundGeolocation.removeListeners();
+  }
 
   render() {
     const { position } = this.state;
