@@ -88,9 +88,6 @@ export default class App extends Component {
       <View >
         <StatusBar barStyle="light-content"/>
         <Map/>
-        <View>
-          <Text>{`LAT:${position.latitude} LONG:${position.longitude}`}</Text>
-        </View>
       </View>
     )
   }
