@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import { StyleSheet, View, Dimensions, Image } from "react-native";
+import * as API from '../../utils/API'
 
 import DarkStyles from './styles/DarkStyles.json';
 import LightStyles from './styles/LightStyles.json';
@@ -15,7 +16,7 @@ class Map extends Component {
         longitude: 0
       },
       ready: true,
-      filteredMarkers: []
+      markers: []
     };
   }
 
@@ -41,6 +42,12 @@ class Map extends Component {
     }
   };
 
+  onRegionChange =(region) => {
+    console.log(region)
+  }
+
+  
+
   render() {
   const { latitude, longitude } = this.state.region;
   const currentTime = new Date().getHours();
@@ -58,7 +65,8 @@ class Map extends Component {
         provider={ PROVIDER_GOOGLE }
         style={ styles.container }
         customMapStyle={ mapStyle }
-        showsUserLocation = {true}
+        showsUserLocation={true}
+        showsBuildings={true}
         region={{
           latitude,
           longitude,
@@ -66,6 +74,7 @@ class Map extends Component {
           longitudeDelta
         }}
         showsMyLocationButton={true}
+        onRegionChangeComplete={this.onRegionChange}
 
         >
         <MapView.Marker     

@@ -58,6 +58,7 @@ export default class App extends Component {
     const { user } = this.state;
     if (!user) {
       const user =  await API.getUser()
+      console.log(user)
       await this.setState( { user } )
     }
   }
