@@ -65,6 +65,7 @@ export default class App extends Component {
     try {
       const user = await AsyncStorage.getItem('spontUser');
       if (user !== null) {
+        console.log(user)
         return user;
       } else {
         const newUser = await this.createUser();
@@ -99,7 +100,7 @@ export default class App extends Component {
   }
   
   onLocation = (location) => {
-    console.log('[location] -', location);
+    // console.log('[location] -', location);
     if (location.coords.speed === 0) {
       const position = {
         latitude: location.coords.latitude,
@@ -111,32 +112,33 @@ export default class App extends Component {
   }
 
   logCoords = async (position) => {
-    console.log(position)
-    const query = JSON.stringify({
-      query: `mutation {
-        insertCoords(userID: ${this.state.user}, latitude: ${position.latitude}, longitude: ${position.longitude}){
-           userID
-          }
-        }`
-    });
+    const { latitude, longitude } = position;
+    const { user } =  this.state;
+    // console.log(user, latitude, longitude)
+    
+    
+    let url = 'http://spont-server.herokuapp.com/graphql';
+    let query = `mutation ($userID: String!, $latitude: Float!, $longitude: Float!) {
+      insertCoords(userID:$userID, latitude:$latitude, longitude:$longitude) { userID, latitude, longitude }
+    }`;
 
-    console.log(query)
-
-    try {
-      const response = await fetch(`http://spont-server.herokuapp.com/graphql`, {
-        headers: {'content-type': 'application/json'},
-        method: 'POST',
-        body: query,
-      });
-      
-      const data = await response.json();
-      console.log(data)
-      return data;
-
-    } catch(error) {
-      console.log(error.message)
-      console.log(error.status)
+    let variables = {
+      userID: user,
+      latitude: latitude,
+      longitude: longitude
     }
+
+    const response =  await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify( { query, variables } )
+    })
+    
+    const data = await response.json()
+    console.log(data)
   
   }
   
