@@ -42,8 +42,9 @@ class Map extends Component {
     }
   };
 
-  onRegionChange =(region) => {
-    console.log(region)
+  onRegionChange = async(region) => {
+    const markers = await API.getMarkers();
+    this.setState( { markers } );
   }
 
   
@@ -56,8 +57,19 @@ class Map extends Component {
   const aspectRatio = width / height;
   const latitudeDelta = 0.0922;
   const longitudeDelta = latitudeDelta * aspectRatio;
+  console.log(this.state.markers)
   
-
+  const markerArray = this.state.markers.map(marker => (
+    <MapView.Marker  
+    key={marker.id}   
+    coordinate={ { latitude: marker.latitude, longitude: marker.longitude } }
+    title={marker.location_name}
+    >
+      <Image source={require('./assets/test.png')}
+        style={{ width: 35, height: 53 }}
+      />
+    </MapView.Marker> 
+  ))
 
   return(
     <View>
@@ -77,22 +89,7 @@ class Map extends Component {
         onRegionChangeComplete={this.onRegionChange}
 
         >
-        <MapView.Marker     
-          coordinate={ { latitude: 39.751714, longitude: -104.99200 } }
-          title={'hey'}
-        >
-        <Image source={require('./assets/test.png')}
-          style={{ width: 35, height: 53 }}
-        />
-        </MapView.Marker> 
-        <MapView.Marker     
-          coordinate={ { latitude: 39.755714, longitude: -104.98200 } }
-          title={'hey'}
-        >
-        <Image source={require('./assets/test.png')}
-          style={{ width: 35, height: 53 }}
-        />
-        </MapView.Marker>
+        { markerArray }
         </MapView> 
     </View>
   )
@@ -101,7 +98,7 @@ class Map extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    height: '95%',
+    height: '100%',
     width: '100%',
   }
 });
