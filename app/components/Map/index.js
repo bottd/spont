@@ -42,9 +42,14 @@ class Map extends Component {
     }
   };
 
-  onRegionChange = async(region) => {
+  onRegionChange = async(position) => {
     const markers = await API.getMarkers();
-    this.setState( { markers } );
+    console.log(position)
+    const region = {
+      latitude: position.latitude,
+      longitude: position.longitude
+    };
+    await this.setState( { markers } );
   }
 
   
