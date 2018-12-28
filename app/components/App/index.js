@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import { StatusBar, View, Text, AsyncStorage } from "react-native";
+import { StatusBar, View, Text } from "react-native";
 import BackgroundGeolocation from "react-native-background-geolocation";
+import * as API from '../../utils/API'
 
 import Map from '../Map'
 
@@ -56,90 +57,20 @@ export default class App extends Component {
   linkUser = async () => {
     const { user } = this.state;
     if (!user) {
-      const user =  await this.getUser()
+      const user =  await API.getUser()
       await this.setState( { user } )
     }
   }
 
-  getUser = async () => {
-    try {
-      const user = await AsyncStorage.getItem('spontUser');
-      if (user !== null) {
-        console.log(user)
-        return user;
-      } else {
-        const newUser = await this.createUser();
-        AsyncStorage.setItem('spontUser', newUser)
-        return newUser;
-      }
-     } catch (error) {
-       console.log(error.message)
-     }
-  }
-
-  createUser = async () => {
-    const query = JSON.stringify({
-      query: `mutation {
-            createUser { 
-              id 
-            }
-          }`
-    });
-
-    console.log(query)
-
-  
-    const response = await fetch(`http://spont-server.herokuapp.com/graphql`, {
-      headers: {'content-type': 'application/json'},
-      method: 'POST',
-      body: query,
-    });
-    
-    const data = await response.json();
-    return data.data.createUser.id;
-  }
-  
   onLocation = (location) => {
-    // console.log('[location] -', location);
     if (location.coords.speed === 0) {
       const position = {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
       }
       this.setState({ position } );
-      this.logCoords(position);
+      API.logCoords(this.state.user, position);
     }
-  }
-
-  logCoords = async (position) => {
-    const { latitude, longitude } = position;
-    const { user } =  this.state;
-    // console.log(user, latitude, longitude)
-    
-    
-    let url = 'http://spont-server.herokuapp.com/graphql';
-    let query = `mutation ($userID: String!, $latitude: Float!, $longitude: Float!) {
-      insertCoords(userID:$userID, latitude:$latitude, longitude:$longitude) { userID, latitude, longitude }
-    }`;
-
-    let variables = {
-      userID: user,
-      latitude: latitude,
-      longitude: longitude
-    }
-
-    const response =  await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify( { query, variables } )
-    })
-    
-    const data = await response.json()
-    console.log(data)
-  
   }
   
   onError(error) {
