@@ -5,7 +5,6 @@ import * as API from '../../utils/API'
 
 import DarkStyles from './styles/DarkStyles.json';
 import LightStyles from './styles/LightStyles.json';
-// import markerImage from './assets/test.png';
 
 class Map extends Component {
   constructor() {
@@ -13,92 +12,89 @@ class Map extends Component {
     this.state = {
       region: {
         latitude: 0,
-        longitude: 0
+        longitude: 0,
+        latitudeDelta: 0,
+        longitudeDelta: 0
       },
-      ready: true,
+      mapStyle: '',
+      mapReady: false,
       markers: []
     };
   }
 
-  setRegion(region) {
-    this.setState({ region });
-  }
-
   componentDidMount() {
-    this.getCurrentPosition();
+    this.setRegion();
+    this.setStyle()
   }
 
-  getCurrentPosition() {
+  setRegion = () => {
     try {
       navigator.geolocation.getCurrentPosition((position) => {
+        const { width, height } = Dimensions.get('window');
+        const aspectRatio = width / height;
+        const latitudeDelta = 0.0922;
+        const longitudeDelta = latitudeDelta * aspectRatio;
         const region = {
           latitude: position.coords.latitude,
-          longitude: position.coords.longitude
+          longitude: position.coords.longitude,
+          latitudeDelta,
+          longitudeDelta
         };
-        this.setRegion(region);
+        this.setState({ region, mapReady: !this.state.mapReady });
       });
     } catch(error) {
       console.log(error.message);
     }
-  };
+  }
+
+  setStyle = () => {
+    const currentTime = new Date().getHours();
+    const mapStyle = currentTime < 18 ? DarkStyles : LightStyles;
+    this.setState({ mapStyle });
+  }
 
   onRegionChange = async(position) => {
     const markers = await API.getMarkers();
-    console.log(position)
-    const region = {
-      latitude: position.latitude,
-      longitude: position.longitude
-    };
-    await this.setState( { markers } );
+    this.setState( { markers } );
   }
 
-  
-
   render() {
-  const { latitude, longitude } = this.state.region;
-  const currentTime = new Date().getHours();
-  const mapStyle = currentTime > 8 ? DarkStyles : LightStyles;
-  let { width, height } = Dimensions.get('window');
-  const aspectRatio = width / height;
-  const latitudeDelta = 0.0922;
-  const longitudeDelta = latitudeDelta * aspectRatio;
-  console.log(this.state.markers)
-  
-  const markerArray = this.state.markers.map(marker => (
-    <MapView.Marker  
-    key={marker.id}   
-    coordinate={ { latitude: marker.latitude, longitude: marker.longitude } }
-    title={marker.location_name}
-    >
-      <Image source={require('./assets/test.png')}
-        style={{ width: 35, height: 53 }}
-      />
-    </MapView.Marker> 
-  ))
+    const { region, mapReady, mapStyle } = this.state;
+    
+    const markerArray = this.state.markers.map(marker => (
+      <MapView.Marker  
+      key={marker.id}   
+      coordinate={ { latitude: marker.latitude, longitude: marker.longitude } }
+      title={marker.location_name}
+      >
+        <Image source={require('./assets/test.png')}
+          style={{ width: 35, height: 53 }}
+        />
+      </MapView.Marker> 
+    ))
 
-  return(
-    <View>
-      <MapView
-        provider={ PROVIDER_GOOGLE }
-        style={ styles.container }
-        customMapStyle={ mapStyle }
-        showsUserLocation={true}
-        showsBuildings={true}
-        region={{
-          latitude,
-          longitude,
-          latitudeDelta,
-          longitudeDelta
-        }}
-        showsMyLocationButton={true}
-        onRegionChangeComplete={this.onRegionChange}
-
-        >
-        { markerArray }
-        </MapView> 
-    </View>
-  )
-}
+    if (mapReady) {
+      return(
+        <View>
+          <MapView
+            provider={ PROVIDER_GOOGLE }
+            style={ styles.container }
+            customMapStyle={ mapStyle }
+            showsUserLocation={true}
+            showsBuildings={true}
+            initialRegion={region}
+            showsMyLocationButton={true}
+            onRegionChangeComplete={this.onRegionChange}
+    
+            >
+            { markerArray }
+            </MapView> 
+        </View>
+      )
+    } else {
+      return(<View></View>)
+    }
+  }
 }
 
 const styles = StyleSheet.create({
