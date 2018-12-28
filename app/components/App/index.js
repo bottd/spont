@@ -34,15 +34,15 @@ export default class App extends Component {
       logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
       stopOnTerminate: false,  
       startOnBoot: true, 
-      url: 'http://yourserver.com/locations',
-      batchSync: false,       // <-- [Default: false] Set true to sync locations to server in a single HTTP request.
-      autoSync: false,         // <-- [Default: true] Set true to sync each location to server as it arrives.
-      headers: {              // <-- Optional HTTP headers
-        "X-FOO": "bar"
-      },
-      params: {               // <-- Optional HTTP params
-        "auth_token": "maybe_your_server_authenticates_via_token_YES?"
-      }
+      // url: 'http://yourserver.com/locations',
+      // batchSync: false,       // <-- [Default: false] Set true to sync locations to server in a single HTTP request.
+      // autoSync: false,         // <-- [Default: true] Set true to sync each location to server as it arrives.
+      // headers: {              // <-- Optional HTTP headers
+      //   "X-FOO": "bar"
+      // },
+      // params: {               // <-- Optional HTTP params
+      //   "auth_token": "maybe_your_server_authenticates_via_token_YES?"
+      // }
     }, (state) => {
       console.log("- BackgroundGeolocation is configured and ready: ", state.enabled);
 
@@ -58,7 +58,6 @@ export default class App extends Component {
     const { user } = this.state;
     if (!user) {
       const user =  await API.getUser()
-      console.log(user)
       await this.setState( { user } )
     }
   }
