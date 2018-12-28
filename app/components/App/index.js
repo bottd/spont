@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { StatusBar, View, Text } from "react-native";
 import BackgroundGeolocation from "react-native-background-geolocation";
+import * as API from '../../utils/API'
 
 import Map from '../Map'
 
@@ -9,15 +10,16 @@ export default class App extends Component {
   constructor() {
     super()
     this.state = {
+      user: '',
       position: {
         latitude: 0,
         longitude: 0,
-      },
-      status: ''
+      }
     }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    await this.linkUser()
     BackgroundGeolocation.onLocation(this.onLocation, this.onError);
     BackgroundGeolocation.ready({
     
@@ -51,24 +53,34 @@ export default class App extends Component {
       }
     });
   }
-  
-componentWillUnmount() {
-  BackgroundGeolocation.removeListeners();
-}
 
-onLocation = (location) => {
-  console.log('[location] -', location);
-  if (location.coords.speed === 0) {
-    const position = {
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
+  linkUser = async () => {
+    const { user } = this.state;
+    if (!user) {
+      const user =  await API.getUser()
+      console.log(user)
+      await this.setState( { user } )
     }
-    this.setState({ position } );
   }
-}
-onError(error) {
-  console.warn('[location] ERROR -', error);
-}
+
+  onLocation = (location) => {
+    if (location.coords.speed === 0) {
+      const position = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      }
+      this.setState({ position } );
+      API.logCoords(this.state.user, position);
+    }
+  }
+  
+  onError(error) {
+    console.warn('[location] ERROR -', error);
+  }
+
+  componentWillUnmount() {
+    BackgroundGeolocation.removeListeners();
+  }
 
   render() {
     const { position } = this.state;
