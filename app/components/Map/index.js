@@ -49,7 +49,7 @@ class Map extends Component {
 
   setStyle = () => {
     const currentTime = new Date().getHours();
-    const mapStyle = currentTime < 18 ? DarkStyles : LightStyles;
+    const mapStyle = currentTime < 24 ? DarkStyles : LightStyles;
     this.setState({ mapStyle });
   }
 
@@ -86,7 +86,6 @@ class Map extends Component {
             initialRegion={region}
             showsMyLocationButton={true}
             onRegionChangeComplete={this.onRegionChange}
-    
             >
             { markerArray }
             </MapView> 
@@ -100,7 +99,7 @@ class Map extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
+    height: '94%',
     width: '100%',
   }
 });
