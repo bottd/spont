@@ -4,7 +4,7 @@ import { AsyncStorage } from "react-native";
 export const getUser = async () => {
   try {
     const user = await AsyncStorage.getItem('spontUser');
-    if (false) {
+    if (user !== null) {
       return user;
     } else {
       const newUser = await createUser();
@@ -63,10 +63,10 @@ export const logCoords = async (user, position) => {
 
 }
 
-export const getMarkers = async() => {
+export const getMarkers = async(user) => {
   const query = JSON.stringify({
     query: `query {
-          user(id:"cd11a566-d841-468f-a8e6-23143b32108e") {
+          user(id:${user}) {
             locations {
               id
               location_name
