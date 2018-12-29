@@ -24,13 +24,13 @@ export default class App extends Component {
     BackgroundGeolocation.ready({
     
       // Geolocation Config
-      reset: true,
+      // reset: true,
       desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
       distanceFilter: 10,
       // Activity Recognition
       stopTimeout: 1,
       // Application config
-      debug: true, // <-- enable this hear sounds for background-geolocation life-cycle.
+      // debug: true, // <-- enable this hear sounds for background-geolocation life-cycle.
       logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
       stopOnTerminate: false,  
       startOnBoot: true, 
@@ -82,11 +82,11 @@ export default class App extends Component {
   }
 
   render() {
-    const { position } = this.state;
+    const { position, user } = this.state;
     return(
       <View >
         <StatusBar barStyle="light-content"/>
-        <Map/>
+        <Map user={user}/>
       </View>
     )
   }
