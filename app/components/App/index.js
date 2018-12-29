@@ -58,7 +58,7 @@ export default class App extends Component {
     const { user } = this.state;
     if (!user) {
       const user =  await API.getUser()
-      await this.setState( { user } )
+      this.setState( { user } )
     }
   }
 
@@ -87,6 +87,12 @@ export default class App extends Component {
       <View >
         <StatusBar barStyle="light-content"/>
         <Map user={user}/>
+        <View>
+          <Text>{user}</Text>
+        </View>
+        <View>
+          <Text>{`LAT: ${position.latitude} LONG: ${position.longitude}`}</Text>
+        </View>
       </View>
     )
   }
