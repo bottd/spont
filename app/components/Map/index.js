@@ -54,7 +54,7 @@ class Map extends Component {
   }
 
   onRegionChange = async(position) => {
-    const markers = await API.getMarkers();
+    const markers = await API.getMarkers(this.props.user);
     this.setState( { markers } );
   }
 
@@ -77,6 +77,7 @@ class Map extends Component {
       return(
         <View>
           <MapView
+            // ref={ref => { this.map = ref; } }
             provider={ PROVIDER_GOOGLE }
             style={ styles.container }
             customMapStyle={ mapStyle }
