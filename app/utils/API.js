@@ -60,13 +60,12 @@ export const logCoords = async (user, position) => {
   
   const data = await response.json()
   console.log(data)
-
 }
 
 export const getMarkers = async(user) => {
   const query = JSON.stringify({
     query: `query {
-          user(id:${user}) {
+          user(id: "${user}") {
             locations {
               id
               location_name
