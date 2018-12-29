@@ -10,46 +10,25 @@ export default class App extends Component {
   constructor() {
     super()
     this.state = {
-      user: '',
-      position: {
-        latitude: 0,
-        longitude: 0,
-      }
+      user: ''
     }
   }
 
   async componentDidMount() {
     await this.linkUser()
-    BackgroundGeolocation.onLocation(this.onLocation, this.onError);
+    BackgroundGeolocation.onMotionChange(this.onMotionChange)
     BackgroundGeolocation.ready({
-    
-      // Geolocation Config
-      // reset: true,
+      reset: true,
       desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
-      distanceFilter: 10,
-      // Activity Recognition
+      distanceFilter: 15,
       stopTimeout: 1,
-      // Application config
-      // debug: true, // <-- enable this hear sounds for background-geolocation life-cycle.
+      // debug: true,
       logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
       stopOnTerminate: false,  
-      startOnBoot: true, 
-      // url: 'http://yourserver.com/locations',
-      // batchSync: false,       // <-- [Default: false] Set true to sync locations to server in a single HTTP request.
-      // autoSync: false,         // <-- [Default: true] Set true to sync each location to server as it arrives.
-      // headers: {              // <-- Optional HTTP headers
-      //   "X-FOO": "bar"
-      // },
-      // params: {               // <-- Optional HTTP params
-      //   "auth_token": "maybe_your_server_authenticates_via_token_YES?"
-      // }
+      startOnBoot: true
     }, (state) => {
-      console.log("- BackgroundGeolocation is configured and ready: ", state.enabled);
-
       if (!state.enabled) {
-        BackgroundGeolocation.start(function() {
-          console.log("- Start success");
-        });
+        BackgroundGeolocation.start();
       }
     });
   }
@@ -62,19 +41,14 @@ export default class App extends Component {
     }
   }
 
-  onLocation = (location) => {
-    if (location.coords.speed === 0) {
+  onMotionChange = event => {
+    if (!event.isMoving) {
       const position = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
+        latitude: event.location.coords.latitude,
+        longitude: event.location.coords.longitude,
       }
-      this.setState({ position } );
       API.logCoords(this.state.user, position);
-    }
-  }
-  
-  onError(error) {
-    console.warn('[location] ERROR -', error);
+   }
   }
 
   componentWillUnmount() {
@@ -87,12 +61,6 @@ export default class App extends Component {
       <View >
         <StatusBar barStyle="light-content"/>
         <Map user={user}/>
-        <View>
-          <Text>{user}</Text>
-        </View>
-        <View>
-          <Text>{`LAT: ${position.latitude} LONG: ${position.longitude}`}</Text>
-        </View>
       </View>
     )
   }

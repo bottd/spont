@@ -99,7 +99,7 @@ class Map extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    height: '94%',
+    height: '100%',
     width: '100%',
   }
 });
