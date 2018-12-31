@@ -23,17 +23,26 @@ export default class App extends Component {
 
     BackgroundGeolocation.onMotionChange(this.logLocation);
 
+    BackgroundGeolocation.onMotionChange((event) => {
+      if (event.isMoving) {
+         console.log('[onMotionChange] Device has just started MOVING ', event.location);
+      } else {
+         console.log('[onMotionChange] Device has just STOPPED:  ', event.location);
+      }
+    });
+    
+
     // BackgroundGeolocation.onLocation(this.onLocation, this.onError);
     BackgroundGeolocation.ready({
     
       // Geolocation Config
-      reset: true,
+      // reset: true,
       desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
       distanceFilter: 10,
       // Activity Recognition
-      stopTimeout: 1,
+      stopTimeout: 5,
       // Application config
-      // debug: true, // <-- enable this hear sounds for background-geolocation life-cycle.
+      debug: true, // <-- enable this hear sounds for background-geolocation life-cycle.
       logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
       stopOnTerminate: false,  
       startOnBoot: true, 
@@ -48,7 +57,6 @@ export default class App extends Component {
       // }
     }, (state) => {
       console.log("- BackgroundGeolocation is configured and ready: ", state.enabled);
-
       if (!state.enabled) {
         BackgroundGeolocation.start(function() {
           console.log("- Start success");
@@ -61,7 +69,6 @@ export default class App extends Component {
     const { user } = this.state;
     if (!user) {
       const user =  await API.getUser()
-      console.log(user)
       this.setState( { user } )
     }
   }
@@ -73,25 +80,11 @@ export default class App extends Component {
         longitude: event.location.coords.longitude,
       }
       this.setState({ position } );
-
       API.logCoords(this.state.user, position);
-    } 
+    } else {
+      console.log('[onMotionChange] Device has just started MOVING ', event.location);
+    }
   }
-
-  // onLocation = (location) => {
-  //   if (location.coords.speed === 0) {
-  //     const position = {
-  //       latitude: location.coords.latitude,
-  //       longitude: location.coords.longitude,
-  //     }
-  //     this.setState({ position } );
-  //     API.logCoords(this.state.user, position);
-  //   }
-  // }
-  
-  // onError(error) {
-  //   console.warn('[location] ERROR -', error);
-  // }
 
   componentWillUnmount() {
     BackgroundGeolocation.removeListeners();
