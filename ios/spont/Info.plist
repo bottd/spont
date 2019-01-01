@@ -38,13 +38,13 @@
 		</dict>
 	</dict>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>CHANGEME: Location Always And When In Use Usage Description</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>CHANGEME: Location Always Usage Description</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string/>
-    <key>NSMotionUsageDescription</key>
-    <string>CHANGEME: Motion updates increase battery efficiency by intelligently toggling location-services when device is detected to be moving</string>
+	<string>CHANGEME: Location Always And When In Use Usage Description</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>CHANGEME: Location Always Usage Description</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string></string>
+	<key>NSMotionUsageDescription</key>
+	<string>CHANGEME: Motion updates increase battery efficiency by intelligently toggling location-services when device is detected to be moving</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
@@ -59,8 +59,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
