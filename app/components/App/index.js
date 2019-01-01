@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StatusBar, View, Text } from "react-native";
+import { StatusBar, View, Button } from "react-native";
 import BackgroundGeolocation from "react-native-background-geolocation";
 import * as API from '../../utils/API'
 
@@ -16,19 +16,19 @@ export default class App extends Component {
 
   async componentWillMount() {
     await this.linkUser()
-    BackgroundGeolocation.onLocation(this.onLocation, this.onError);
     BackgroundGeolocation.onMotionChange(this.onMotionChange);
 
     BackgroundGeolocation.ready({
       reset: true,
-      disableStopDetection: true,
       desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
       distanceFilter: 10,
-      stopTimeout: 1,
+      stopTimeout: 2,
       debug: true, 
       logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
       stopOnTerminate: false,
-      startOnBoot: true
+      startOnBoot: true,
+      batchSync: false,
+      autoSync: false, 
     }, (state) => {
       console.log("- BackgroundGeolocation is configured and ready: ", state.enabled);
 
@@ -48,24 +48,24 @@ export default class App extends Component {
     }
   }
   
-  onLocation = location => {
-    const { latitude, longitude } = location.coords;
-    if (location.coords.speed === 0) {
-      const position = { latitude, longitude }
-      API.logCoords(this.state.user, position);
-    }
-  }
-  
-  onError = error => {
-    return
-  }
-  
-  onMotionChange = event => {
+  onMotionChange = async event => {
+    const currentTime = new Date().toLocaleString();
+    BackgroundGeolocation.logger.notice(`onMotionChange fired at ${currentTime}`);
     const { latitude, longitude } = event.location.coords;
     if (!event.isMoving) {
       const position = { latitude, longitude }
-      API.logCoords(this.state.user, position);
+      await this.linkUser()
+      BackgroundGeolocation.logger.ok(this.state.user);
+      const response = await API.logCoords(this.state.user, position);
+      BackgroundGeolocation.logger.ok(`API fired at ${currentTime}`);
+      BackgroundGeolocation.logger.ok(response.userID);
+      BackgroundGeolocation.logger.ok(response.latitude);
+      BackgroundGeolocation.logger.ok(response.longitude);
     }
+  }
+
+  sendLog = () => {
+    BackgroundGeolocation.emailLog('g@masterofnone.com')
   }
   
   componentWillUnmount() {
@@ -78,6 +78,12 @@ export default class App extends Component {
       <View >
         <StatusBar barStyle="light-content"/>
         <Map user={user}/>
+        <Button
+          onPress={this.sendLog}
+          title="Send Log"
+          color="#841584"
+          accessibilityLabel="Learn more about this purple button"
+        />
       </View>
     )
   }
