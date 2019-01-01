@@ -58,6 +58,7 @@ export const logCoords = async (user, position) => {
     body: JSON.stringify( { query, variables } )
   })
   const data = await response.json()
+  return data.data.insertCoords
 }
 
 export const getMarkers = async(user) => {
