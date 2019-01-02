@@ -35,31 +35,6 @@ export const createUser = async () => {
   return data.data.createUser.id;
 }
 
-export const logCoords = async (user, position) => {
-  const { latitude, longitude } = position;
-
-  let url = 'http://spont-server.herokuapp.com/graphql';
-  let query = `mutation ($userID: String!, $latitude: Float!, $longitude: Float!) {
-    insertCoords(userID:$userID, latitude:$latitude, longitude:$longitude) { userID, latitude, longitude }
-  }`;
-
-  let variables = {
-    userID: user,
-    latitude: latitude,
-    longitude: longitude
-  }
-
-  const response =  await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify( { query, variables } )
-  })
-  const data = await response.json()
-  return data.data.insertCoords
-}
 
 export const getMarkers = async(user) => {
   const query = JSON.stringify({
