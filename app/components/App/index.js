@@ -16,22 +16,25 @@ export default class App extends Component {
 
   async componentWillMount() {
     await this.linkUser()
-    BackgroundGeolocation.onMotionChange(this.onMotionChange);
 
     BackgroundGeolocation.ready({
       reset: true,
       desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
       distanceFilter: 10,
+      elasticityMultiplier: 10,
       stopTimeout: 2,
       debug: true, 
       logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
       stopOnTerminate: false,
       startOnBoot: true,
+      url: 'http://spont-server.herokuapp.com/locations',
+      params: {
+        'userID': this.state.user,
+      },
       batchSync: false,
-      autoSync: false, 
+      autoSync: true,
     }, (state) => {
       console.log("- BackgroundGeolocation is configured and ready: ", state.enabled);
-
       if (!state.enabled) {
         BackgroundGeolocation.start(function() {
           console.log("- Start success");
@@ -47,30 +50,6 @@ export default class App extends Component {
       this.setState( { user } )
     }
   }
-  
-  onMotionChange = async event => {
-    const currentTime = new Date().toLocaleString();
-    BackgroundGeolocation.logger.notice(`onMotionChange fired at ${currentTime}`);
-    const { latitude, longitude } = event.location.coords;
-    if (!event.isMoving) {
-      const position = { latitude, longitude }
-      await this.linkUser()
-      BackgroundGeolocation.logger.ok(this.state.user);
-      const response = await API.logCoords(this.state.user, position);
-      BackgroundGeolocation.logger.ok(`API fired at ${currentTime}`);
-      BackgroundGeolocation.logger.ok(response.userID);
-      BackgroundGeolocation.logger.ok(response.latitude);
-      BackgroundGeolocation.logger.ok(response.longitude);
-    }
-  }
-
-  sendLog = () => {
-    BackgroundGeolocation.emailLog('g@masterofnone.com')
-  }
-  
-  componentWillUnmount() {
-    BackgroundGeolocation.removeListeners();
-  }
 
   render() {
     const { user } = this.state;
@@ -78,12 +57,6 @@ export default class App extends Component {
       <View >
         <StatusBar barStyle="light-content"/>
         <Map user={user}/>
-        <Button
-          onPress={this.sendLog}
-          title="Send Log"
-          color="#841584"
-          accessibilityLabel="Learn more about this purple button"
-        />
       </View>
     )
   }
