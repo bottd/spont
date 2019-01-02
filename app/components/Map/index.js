@@ -5,7 +5,6 @@ import * as API from '../../utils/API'
 
 import DarkStyles from './styles/DarkStyles.json';
 import LightStyles from './styles/LightStyles.json';
-// import markerImage from './assets/test.png';
 
 class Map extends Component {
   constructor() {
@@ -13,95 +12,94 @@ class Map extends Component {
     this.state = {
       region: {
         latitude: 0,
-        longitude: 0
+        longitude: 0,
+        latitudeDelta: 0,
+        longitudeDelta: 0
       },
-      ready: true,
+      mapStyle: '',
+      mapReady: false,
       markers: []
     };
   }
 
-  setRegion(region) {
-    this.setState({ region });
-  }
-
   componentDidMount() {
-    this.getCurrentPosition();
+    this.setRegion();
+    this.setStyle()
   }
 
-  getCurrentPosition() {
+  setRegion = () => {
     try {
       navigator.geolocation.getCurrentPosition((position) => {
+        const { width, height } = Dimensions.get('window');
+        const aspectRatio = width / height;
+        const latitudeDelta = 0.0922;
+        const longitudeDelta = latitudeDelta * aspectRatio;
         const region = {
           latitude: position.coords.latitude,
-          longitude: position.coords.longitude
+          longitude: position.coords.longitude,
+          latitudeDelta,
+          longitudeDelta
         };
-        this.setRegion(region);
+        this.setState({ region, mapReady: !this.state.mapReady });
       });
     } catch(error) {
       console.log(error.message);
     }
-  };
-
-  onRegionChange =(region) => {
-    console.log(region)
   }
 
-  
+  setStyle = () => {
+    const currentTime = new Date().getHours();
+    const mapStyle = currentTime < 24 ? DarkStyles : LightStyles;
+    this.setState({ mapStyle });
+  }
+
+  onRegionChange = async(position) => {
+    const markers = await API.getMarkers(this.props.user);
+    this.setState( { markers } );
+  }
 
   render() {
-  const { latitude, longitude } = this.state.region;
-  const currentTime = new Date().getHours();
-  const mapStyle = currentTime > 8 ? DarkStyles : LightStyles;
-  let { width, height } = Dimensions.get('window');
-  const aspectRatio = width / height;
-  const latitudeDelta = 0.0922;
-  const longitudeDelta = latitudeDelta * aspectRatio;
-  
-
-
-  return(
-    <View>
-      <MapView
-        provider={ PROVIDER_GOOGLE }
-        style={ styles.container }
-        customMapStyle={ mapStyle }
-        showsUserLocation={true}
-        showsBuildings={true}
-        region={{
-          latitude,
-          longitude,
-          latitudeDelta,
-          longitudeDelta
-        }}
-        showsMyLocationButton={true}
-        onRegionChangeComplete={this.onRegionChange}
-
-        >
-        <MapView.Marker     
-          coordinate={ { latitude: 39.751714, longitude: -104.99200 } }
-          title={'hey'}
-        >
+    const { region, mapReady, mapStyle } = this.state;
+    
+    const markerArray = this.state.markers.map(marker => (
+      <MapView.Marker  
+      key={marker.id}   
+      coordinate={ { latitude: marker.latitude, longitude: marker.longitude } }
+      title={marker.location_name}
+      >
         <Image source={require('./assets/test.png')}
           style={{ width: 35, height: 53 }}
         />
-        </MapView.Marker> 
-        <MapView.Marker     
-          coordinate={ { latitude: 39.755714, longitude: -104.98200 } }
-          title={'hey'}
-        >
-        <Image source={require('./assets/test.png')}
-          style={{ width: 35, height: 53 }}
-        />
-        </MapView.Marker>
-        </MapView> 
-    </View>
-  )
-}
+      </MapView.Marker> 
+    ))
+
+    if (mapReady) {
+      return(
+        <View>
+          <MapView
+            // ref={ref => { this.map = ref; } }
+            provider={ PROVIDER_GOOGLE }
+            style={ styles.container }
+            customMapStyle={ mapStyle }
+            showsUserLocation={true}
+            showsBuildings={true}
+            initialRegion={region}
+            showsMyLocationButton={true}
+            onRegionChangeComplete={this.onRegionChange}
+            >
+            { markerArray }
+            </MapView> 
+        </View>
+      )
+    } else {
+      return(<View></View>)
+    }
+  }
 }
 
 const styles = StyleSheet.create({
   container: {
-    height: '95%',
+    height: '100%',
     width: '100%',
   }
 });
