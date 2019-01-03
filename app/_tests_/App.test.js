@@ -1,23 +1,12 @@
+import 'react-native';
+import React from 'react';
 // import App from '../components/App';
-// import BackgroundGeolocation from "react-native-background-geolocation";
 
-// // jest.mock('react-native-background-geolocation');
+import renderer from 'react-test-renderer';
 
-// // jest.mock('react-native-background-geolocation', () => {
-// //   return {
-// //     BackgroundGeolocation: {
-// //       ready: jest.fn(),
-// //       start: jest.fn()
-// //     }
-// //   }
-// // })
-
-
-
-describe('App', () => {
-  beforeEach(() => {
-  });
-  it.skip('should exist', () => {
-    
-  })
+it.skip('renders correctly', () => {
+  const tree = renderer.create(
+    <App />
+    ).toJSON();
+  expect(tree).toMatchSnapshot();
 });
