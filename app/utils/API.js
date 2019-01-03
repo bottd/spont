@@ -4,7 +4,7 @@ import { AsyncStorage } from "react-native";
 export const getUser = async () => {
   try {
     const user = await AsyncStorage.getItem('spontUser');
-    if (user !== null || user !== undefined) {
+    if (!user) {
       return user;
     } else {
       const newUser = await createUser();
@@ -19,8 +19,8 @@ export const getUser = async () => {
 export const createUser = async () => {
   const query = JSON.stringify({
     query: `mutation {
-          createUser { 
-            id 
+          createUser {
+            id
           }
         }`
   });
@@ -30,7 +30,7 @@ export const createUser = async () => {
     method: 'POST',
     body: query,
   });
-  
+
   const data = await response.json();
   return data.data.createUser.id;
 }
@@ -39,12 +39,14 @@ export const createUser = async () => {
 export const getMarkers = async(user) => {
   const query = JSON.stringify({
     query: `query {
-            locations {
-              id
-              location_name
-              latitude
-              longitude 
-            } 
+            user(id: "${user}") {
+              suggestions {
+                id
+                location_name
+                latitude
+                longitude
+              }
+            }
           }
         `
   });
@@ -54,7 +56,8 @@ export const getMarkers = async(user) => {
     method: 'POST',
     body: query,
   });
-  
+
   const data = await response.json();
-  return data.data.locations;
+  console.log(data.data.user);
+  return data.data.user.suggestions;
 }
