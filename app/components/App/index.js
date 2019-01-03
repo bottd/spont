@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StatusBar, View, Button } from "react-native";
+import { StatusBar, View } from "react-native";
 import BackgroundGeolocation from "react-native-background-geolocation";
 import * as API from '../../utils/API'
 
@@ -19,11 +19,11 @@ export default class App extends Component {
 
     BackgroundGeolocation.ready({
       reset: true,
-      desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
+      desiredAccuracy: BackgroundGeolocation.LOG_LEVEL_OFF,
       distanceFilter: 10,
-      elasticityMultiplier: 10,
-      stopTimeout: 2,
-      debug: true, 
+      elasticityMultiplier: 3,
+      stopTimeout: 1,
+      // debug: true, 
       logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
       stopOnTerminate: false,
       startOnBoot: true,
