@@ -4,7 +4,7 @@ import { AsyncStorage } from "react-native";
 export const getUser = async () => {
   try {
     const user = await AsyncStorage.getItem('spontUser');
-    if (!user) {
+    if (user !== null) {
       return user;
     } else {
       const newUser = await createUser();
