@@ -58,6 +58,5 @@ export const getMarkers = async(user) => {
   });
 
   const data = await response.json();
-  console.log(data.data.user);
   return data.data.user.suggestions;
 }
