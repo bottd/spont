@@ -4,7 +4,7 @@ import { AsyncStorage } from "react-native";
 export const getUser = async () => {
   try {
     const user = await AsyncStorage.getItem('spontUser');
-    if (user !== null) {
+    if (user !== null || user !== undefined) {
       return user;
     } else {
       const newUser = await createUser();
@@ -12,7 +12,7 @@ export const getUser = async () => {
       return newUser;
     }
    } catch (error) {
-     console.log(error.message)
+    //  console.log(error.message)
    }
 }
 
@@ -39,16 +39,14 @@ export const createUser = async () => {
 export const getMarkers = async(user) => {
   const query = JSON.stringify({
     query: `query {
-          user(id: "${user}") {
             locations {
               id
               location_name
-              category
               latitude
               longitude 
             } 
           }
-        }`
+        `
   });
 
   const response = await fetch(`http://spont-server.herokuapp.com/graphql`, {
@@ -58,5 +56,5 @@ export const getMarkers = async(user) => {
   });
   
   const data = await response.json();
-  return data.data.user.locations;
+  return data.data.locations;
 }
